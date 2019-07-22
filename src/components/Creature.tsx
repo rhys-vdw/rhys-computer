@@ -77,7 +77,7 @@ class BallJoint extends PureComponent<BallJointProps, BallJointState> {
   componentDidMount() {
     this.intervalId = window.setInterval(
       this.updateAngle,
-      random.integer(300, 500)
+      random.integer(500, 1200)
     )
   }
 
