@@ -1,8 +1,19 @@
 import webpack from 'webpack';
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-var definePlugin = new webpack.DefinePlugin({
-  'process.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
-});
+if (process.env.NODE_ENV === undefined) {
+  process.env.NODE_ENV = "development"
+}
+
+const plugins = [
+  new webpack.DefinePlugin({
+    'process.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+  })
+]
+
+if (process.env.ANALYZE_BUNDLE) {
+  plugins.push(new BundleAnalyzerPlugin())
+}
 
 const config: webpack.Configuration = {
   mode: process.env.NODE_ENV as ("development" | undefined) || "production",
@@ -22,7 +33,7 @@ const config: webpack.Configuration = {
       { test: /\.tsx?$/, loader: "ts-loader" }
     ]
   },
-  plugins: [definePlugin]
+  plugins
 }
 
 export default config
