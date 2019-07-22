@@ -7,7 +7,7 @@
     "lint": "standard src/**/*.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "dev": "NODE_ENV=develop webpack-cli serve",
+    "dev": "NODE_ENV=development webpack-cli serve",
     "gh-pages": "./gh-pages.sh"
   },
   "author": "",
