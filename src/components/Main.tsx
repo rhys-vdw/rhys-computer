@@ -26,14 +26,16 @@ function updateWindow(seed, creature) {
 
 interface SocialProps {
   icon: string;
-  children?: ReactNode;
+  children?: string;
   href: string;
 }
 
 const Social = ({ icon, children, href }: SocialProps) => (
-  <a href={href}>
-    <i className={`fa fa-${icon}`} aria-hidden="true" />
-    {children}
+  <a className="Social" href={href} title={children}>
+    <i className={`Social-icon ${icon}`} aria-hidden="true" />
+    <span className="Social-text">
+      {children}
+    </span>
   </a>
 );
 
@@ -117,18 +119,28 @@ export default class Main extends PureComponent<{}, State> {
           onClick={this.handleClick}
         />
         <div className="Main-contact">
+          <p>
           Rhys van der Waerden — game and web developer
-          <br />
-          <Social icon="github" href="https://github.com/rhys-vdw">
+          </p><p>
+          <Social icon="fas fa-envelope" href="mailto:https://github.com/rhys-vdw">
+            rhys.vdw@gmail.com
+          </Social>
+          <Social icon="fab fa-github" href="https://github.com/rhys-vdw">
             GitHub
-          </Social>{" "}
-          &bull;{" "}
+          </Social>
           <Social
-            icon="linkedin-square"
+            icon="fab fa-linkedin"
             href="https://www.linkedin.com/in/rhys-van-der-waerden-5b857454/"
           >
             LinkedIn
           </Social>
+          <Social
+            icon="fab fa-twitter-square"
+            href="https://www.linkedin.com/in/rhys-van-der-waerden-5b857454/"
+          >
+            Twitter
+          </Social>
+          </p>
         </div>
       </div>
     );
