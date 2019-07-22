@@ -1,4 +1,4 @@
-import React, { PureComponent, ReactNode } from 'react'
+import React, { PureComponent, ReactNode, SVGAttributes } from 'react'
 import PropTypes from "prop-types"
 
 import * as NodeType from '../constants/NodeType'
@@ -311,10 +311,8 @@ interface State {
   readonly isBlinking: boolean
 }
 
-interface Props {
+interface Props extends SVGAttributes<SVGElement> {
   readonly creature: any
-  readonly width: string
-  readonly height: string
 }
 
 export default class Creature extends PureComponent<Props, State> {
@@ -355,12 +353,11 @@ export default class Creature extends PureComponent<Props, State> {
   }
 
   render() {
-    const { creature, width, height } = this.props;
+    const { creature, ...rest } = this.props;
     return (
       <svg
-        width={width}
-        height={height}
         viewBox={`-300 -300 600 500`}
+        {...rest}
       >
         <NodeView node={creature} parent={DEFAULT_PARENT} />
       </svg>

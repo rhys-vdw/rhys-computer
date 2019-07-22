@@ -1,6 +1,10 @@
 <html>
   <head>
     <title></title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/brands.min.css"
+      rel="stylesheet"
+    />
     <style>
       body {
         margin: 0;
@@ -11,30 +15,48 @@
       svg * {
         transition: all 0.2s ease-in-out;
       }
-      .Main,
-      .Main-creatureContainer {
-        height: 100%;
-      }
-      .Main-saveLink {
-        display: block;
-        padding: 2em;
-
+      .Main {
+        /* Position */
         position: absolute;
-        left: 0;
+        top: 0;
         right: 0;
+        bottom: 0;
+        left: 0;
 
+        /* Layout */
+        display: flex;
+        flex-direction: column;
+        justify-content: stretch;
+        align-content: stretch;
+
+        /* Text */
+        user-select: none;
         font-family: monospace;
         color: black;
+      }
+      .Main-saveLink,
+      .Main-contact {
+        display: block;
+        padding: 2em;
+        flex-shrink: 1;
         text-align: center;
+      }
+      .Main-saveLink {
         text-decoration: none;
+      }
+      .Main-share {
+        text-decoration: underline;
+      }
+      .Main-creature {
+        flex-grow: 1;
       }
       @media only screen and (max-device-width: 480px) {
         .Main-saveLink {
           font-size: 2.5em
         }
       }
-      .Main-saveLink:hover {
-        color: black !important;
+      a {
+        color: inherit;
       }
     </style>
   </head>
