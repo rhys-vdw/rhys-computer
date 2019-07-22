@@ -5,6 +5,7 @@ var definePlugin = new webpack.DefinePlugin({
 });
 
 const config: webpack.Configuration = {
+  mode: process.env.NODE_ENV as ("development" | undefined) || "production",
   devtool: "inline-source-map",
   entry: "./src/index.tsx",
   output: {
