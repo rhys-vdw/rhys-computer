@@ -66,19 +66,21 @@
       .Social-text {
         display: none;
       }
-      @media only screen and (min-width: 560px) {
-        .Social:not(:last-child):after {
-          content: '•';
-          display: inline-block;
-          padding: 5px;
-        }
-        .Social-icon {
-          font-size: 1em;
-          bottom: -2px;
-          padding: 0 3px 0 0;
-        }
-        .Social-text {
-          display: inline;
+      @media (min-device-width: 480px) {
+        @media only screen and (min-width: 560px) {
+          .Social:not(:last-child):after {
+            content: '•';
+            display: inline-block;
+            padding: 5px;
+          }
+          .Social-icon {
+            font-size: 1em;
+            bottom: -2px;
+            padding: 0 3px 0 0;
+          }
+          .Social-text {
+            display: inline;
+          }
         }
       }
     </style>
