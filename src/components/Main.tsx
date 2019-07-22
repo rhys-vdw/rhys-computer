@@ -4,6 +4,7 @@ import Creature from './Creature'
 import random from '../random'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import Color from 'tinycolor2'
+import { any, number } from 'prop-types';
 
 const nextSeed = () => random.integer(0, Math.pow(2, 31))
 const getHash = () => window.location.hash.substr(1)
@@ -24,11 +25,17 @@ function updateWindow(seed, creature) {
   setTitle(creature)
 }
 
-export default class Main extends PureComponent {
+interface State {
+  readonly creature: any
+  readonly seed: number
+  readonly hasBeenShared: boolean
+}
+
+export default class Main extends PureComponent<{}, State> {
   constructor(props) {
     super(props)
     const hash = getHash()
-    const seed = hash.length === 0 ? nextSeed() : parseInt(hash)
+    const seed = hash.length === 0 ? nextSeed() : parseInt(hash, 10)
     const creature = generateCreature(seed)
     updateWindow(seed, creature)
     this.state = { creature, seed, hasBeenShared: false }
@@ -46,10 +53,10 @@ export default class Main extends PureComponent {
   }
 
   handleHashChange() {
-    this.setSeed(getHash())
+    this.setSeed(parseInt(getHash(), 10))
   }
 
-  setSeed(seed) {
+  setSeed(seed: number) {
     const creature = generateCreature(seed)
     updateWindow(seed, creature)
     this.setState({

@@ -1,7 +1,10 @@
-import React, { PureComponent, PropTypes } from 'react'
+import React, { PureComponent, ReactNode } from 'react'
+import PropTypes from "prop-types"
+
 import * as NodeType from '../constants/NodeType'
 import Vector from 'victor'
 import random from '../random'
+import { Node } from "../Generation"
 
 function Iris({ node }) {
   const { size, color, pupilSize } = node
@@ -10,7 +13,7 @@ function Iris({ node }) {
       <ellipse
         cx={0} cy={0}
         rx={size} ry={size}
-        fill={color}
+        fill={color.toString()}
       />
       <ellipse
         cx={0} cy={0}
@@ -53,21 +56,26 @@ Eye.contextTypes = {
   isBlinking: PropTypes.bool.isRequired,
 }
 
-class BallJoint extends PureComponent {
-  constructor(props) {
-    super(props)
-    this.state = { angle: 0 }
-    this.updateAngle = this.updateAngle.bind(this)
-  }
+interface BallJointProps {
+  readonly node: Node
+}
 
-  updateAngle() {
+interface BallJointState {
+  readonly angle: number
+}
+
+class BallJoint extends PureComponent<BallJointProps, BallJointState> {
+  state: BallJointState = { angle: 0 }
+  intervalId: number = -1
+
+  updateAngle = () => {
     const { maxAngle } = this.props.node;
-    const angle = random.integer(0, maxAngle) - maxAngle / 2
+    const angle = random.integer(0, maxAngle!) - maxAngle! / 2
     this.setState({ angle })
   }
 
   componentDidMount() {
-    this.intervalId = setInterval(
+    this.intervalId = window.setInterval(
       this.updateAngle,
       random.integer(300, 500)
     )
@@ -88,8 +96,8 @@ class BallJoint extends PureComponent {
       >
         <ellipse
           cx={0} cy={0}
-          rx={size} ry={size}
-          fill={color}
+          rx={size![0]} ry={size![1]}
+          fill={color!.toString()}
         />
         { children }
       </g>
@@ -97,33 +105,43 @@ class BallJoint extends PureComponent {
   }
 }
 
-function Segment({ node, children }) {
-  const { width, size, color } = node
+interface SegementProps {
+  readonly node: Node,
+  readonly children: ReactNode
+}
+
+function Segment({ node, children }: SegementProps) {
+  const { size, color } = node
   return (
     <g className='Segment'>
       <ellipse
-        cx={0} cy={size[1]}
-        rx={size[0]} ry={size[1]}
-        fill={color}
+        cx={0} cy={size![1]}
+        rx={size![0]} ry={size![1]}
+        fill={color!.toString()}
       />
       { children }
     </g>
   )
 }
 
-class Mouth extends PureComponent {
-  constructor(props) {
-    super(props)
-    this.state = { isSucking: true }
-    this.handleMouseOver = this.handleMouseOver.bind(this)
-    this.handleMouseLeave = this.handleMouseLeave.bind(this)
+interface MouthProps {
+  readonly node: Node,
+}
+
+interface MouthState {
+  readonly isSucking: boolean
+}
+
+class Mouth extends PureComponent<MouthProps, MouthState> {
+  state: MouthState = {
+    isSucking: false
   }
 
-  handleMouseOver() {
+  private handleMouseOver = () => {
     this.setState({ isSucking: true })
   }
 
-  handleMouseLeave() {
+  private handleMouseLeave = () => {
     this.setState({ isSucking: false })
   }
 
@@ -136,7 +154,7 @@ class Mouth extends PureComponent {
     const { size, color, curve } = node;
     const { isSucking } = this.state;
 
-    const halfWidth = size[0] / 2
+    const halfWidth = size![0] / 2
 
     return (
       <g className='Mouth'
@@ -148,8 +166,8 @@ class Mouth extends PureComponent {
               `Q 0 ${curve}, ${halfWidth} 0`
             ].join(' ')}
             fill={'transparent'}
-            stroke={color}
-            strokeWidth={node.lipThickness * 2}
+            stroke={color!.toString()}
+            strokeWidth={node.lipThickness! * 2}
             strokeLinecap="round"
           />
         ) }
@@ -159,7 +177,7 @@ class Mouth extends PureComponent {
             rx={Math.max(15, halfWidth)}
             ry={Math.max(15, halfWidth)}
             fill='black'
-            stroke={color}
+            stroke={color!.toString()}
             strokeWidth={node.lipThickness}
           />
         ) }
@@ -204,23 +222,19 @@ function Core({ node, children }) {
 }
 
 const componentByType = {
-  [NodeType.CORE]: Core,
-  [NodeType.NECK]: BallJoint,
-  [NodeType.BALL_JOINT]: BallJoint,
-  [NodeType.SEGMENT]: Segment,
-  [NodeType.MOUTH]: Mouth,
-  [NodeType.EYE]: Eye,
-  [NodeType.IRIS]: Iris,
+  [NodeType.NodeType.Core]: Core,
+  [NodeType.NodeType.Neck]: BallJoint,
+  [NodeType.NodeType.BallJoint]: BallJoint,
+  [NodeType.NodeType.Segment]: Segment,
+  [NodeType.NodeType.Mouth]: Mouth,
+  [NodeType.NodeType.Eye]: Eye,
+  [NodeType.NodeType.Iris]: Iris,
 }
 
-function groupTransform(parent, node, isMirrored) {
-
+function groupTransform(parent: Node, node: Node, isMirrored: boolean): string {
   const mirrorSign = isMirrored ? -1 : 1
-
   const rotation = node.rotation || 0
-
   const position = node.position || [0, 0]
-
   const scale = node.scale || 1
 
   const translationScale = Vector.fromArray(Array.isArray(parent.size)
@@ -239,17 +253,23 @@ function groupTransform(parent, node, isMirrored) {
   ].join(' ')
 }
 
-function Node({ node, parent, isMirrored }) {
+interface NodeProps {
+  readonly node: Node,
+  readonly parent: Node,
+  readonly isMirrored?: boolean,
+}
+
+function NodeView({ node, parent, isMirrored = false }: NodeProps) {
   const NodeComponent = componentByType[node.type]
 
   if (NodeComponent == null) {
     console.error(`Unexpected node type: ${node.type}`)
-    return false
+    return null
   }
 
   const counts = {};
 
-  const children = node.children.reduce((result, childNode, i) => {
+  const children = node.children.reduce((result, childNode) => {
 
     // Increment count
     counts[childNode.type] = (counts[childNode.type] || 0) + 1;
@@ -257,17 +277,18 @@ function Node({ node, parent, isMirrored }) {
     const key = childNode.type + counts[childNode.type]
 
     result.push(
-      <Node key={key} parent={node} node={childNode} />
+      <NodeView key={key} parent={node} node={childNode} />
     )
     if (childNode.mirror) result.push(
-      <Node key={`${key}-mirrored`}
+      <NodeView
+        key={`${key}-mirrored`}
         parent={node}
         node={childNode}
         isMirrored={true}
       />
     )
     return result
-  }, [])
+  }, [] as ReactNode[])
 
   return (
     <g
@@ -281,12 +302,27 @@ function Node({ node, parent, isMirrored }) {
   )
 }
 
-const DEFAULT_PARENT = {
+const DEFAULT_PARENT: Node = {
   size: [1, 1],
   rotation: 0,
+} as any
+
+interface State {
+  readonly isBlinking: boolean
 }
 
-export default class Creature extends PureComponent {
+interface Props {
+  readonly creature: any
+  readonly width: string
+  readonly height: string
+}
+
+export default class Creature extends PureComponent<Props, State> {
+  public static childContextTypes = {
+    isBlinking: PropTypes.bool.isRequired,
+  }
+
+  timeoutId: number = -1
 
   constructor(props) {
     super(props)
@@ -302,7 +338,7 @@ export default class Creature extends PureComponent {
       ? random.integer(500, 5000)
       : random.integer(200, 300)
 
-    this.timeoutId = setTimeout(this.updateBlink, duration)
+    this.timeoutId = window.setTimeout(this.updateBlink, duration)
   }
 
   componentDidMount() {
@@ -326,12 +362,8 @@ export default class Creature extends PureComponent {
         height={height}
         viewBox={`-300 -300 600 500`}
       >
-        <Node node={creature} parent={DEFAULT_PARENT} />
+        <NodeView node={creature} parent={DEFAULT_PARENT} />
       </svg>
     )
   }
-}
-
-Creature.childContextTypes = {
-  isBlinking: PropTypes.bool.isRequired,
 }
