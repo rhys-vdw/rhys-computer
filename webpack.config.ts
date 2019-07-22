@@ -1,10 +1,6 @@
 import webpack from 'webpack';
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-if (process.env.NODE_ENV === undefined) {
-  process.env.NODE_ENV = "development"
-}
-
 const plugins = [
   new webpack.DefinePlugin({
     'process.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
@@ -16,8 +12,8 @@ if (process.env.ANALYZE_BUNDLE) {
 }
 
 const config: webpack.Configuration = {
-  mode: process.env.NODE_ENV as ("development" | undefined) || "production",
-  devtool: "inline-source-map",
+  mode: process.env.NODE_ENV as webpack.Configuration["mode"],
+  devtool: process.env.NODE_ENV === "production" ? undefined : "inline-source-map",
   entry: "./src/index.tsx",
   output: {
       path: __dirname,
