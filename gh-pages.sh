@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 git checkout gh-pages
-git reset --hard master
+git merge master
 npm run build
 git add -f bundle.js
 git commit -m "Update gh-pages"
