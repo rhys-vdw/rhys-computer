@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
     "dev": "NODE_ENV=development webpack-cli serve",
-    "gh-pages": "./gh-pages.sh"
+    "gh-pages": "./gh-pages.sh",
+    "analyze": "ANALYZE_BUNDLE=1 yarn run build"
   },
   "author": "",
   "license": "ISC",
@@ -20,7 +21,6 @@
     "@types/react-dom": "^16.8.4",
     "@types/tinycolor2": "^1.4.2",
     "@types/webpack": "^4.32.0",
-    "lodash": "^4.15.0",
     "prop-types": "^15.7.2",
     "random-js": "^1.0.8",
     "react": "^16.8.6",
@@ -38,6 +38,7 @@
     "standard-loader": "^5.0.0",
     "ts-loader": "^6.0.4",
     "webpack": "4.36.1",
+    "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.7.2"
   }

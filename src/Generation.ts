@@ -1,7 +1,14 @@
 import { NodeType } from './constants/NodeType'
-import { flatMap, times, last } from 'lodash'
 import Random from 'random-js'
 import Color from 'tinycolor2'
+
+function times<T>(count: number, cb: (i: number) => T): T[] {
+  let result: T[] = []
+  for (let i = 0; i < count; i++) {
+    result.push(cb(count));
+  }
+  return result
+}
 
 export const MaxMouthCurve = 10;
 export const MinMouthCurve = -20;
@@ -23,10 +30,11 @@ export interface Node {
 
 type GetColor = () => Color.Instance;
 
-function nestNodes(nodes) {
+function nestNodes(nodes: readonly Node[]): Node | null {
   for (let i = 0; i < nodes.length - 1; i++) {
-    nodes[i].children.push(nodes[i + 1])
+    (nodes[i].children as Node[]).push(nodes[i + 1])
   }
+  return nodes.length === 0 ? null : nodes[0]
 }
 
 function createBallJoint(
@@ -52,9 +60,11 @@ function generateLimb(
   random: Random,
   nextColor: GetColor
 ) {
-  const nodes = flatMap(times(random.integer(1, 4), index => {
-    return [
-      createBallJoint(index === 0
+  const count = random.integer(1, 4);
+  const nodes: Node[] = [];
+  for (let i = 0; i < count; i++) {
+    nodes.push(
+      createBallJoint(i === 0
         ? { position, rotation, mirror: true }
         : {
             position: [0, 2],
@@ -71,12 +81,9 @@ function generateLimb(
         color: nextColor(),
         children: []
       }
-    ]
-  }))
-
-  nestNodes(nodes);
-
-  return nodes[0]
+    )
+  }
+  return nestNodes(nodes);
 }
 
 function generateHead(random, nextColor): Node {
@@ -158,9 +165,8 @@ function colorMutator(random) {
   }
 }
 
-function generateSpine(random, nextColor) {
-
-  const cores = times(random.integer(1, 5), index => ({
+function generateSpine(random: Random, nextColor: GetColor) {
+  const cores = times(random.integer(1, 5), (index): Node => ({
     type: NodeType.Core,
     size: [random.real(15, 50), random.real(15, 40)],
     position: [0, index === 0 ? 0 : -1],
@@ -170,15 +176,13 @@ function generateSpine(random, nextColor) {
       generateLimb({
         rotation: random.real(0, 180),
         position: [random.real(0.1, 0.4), random.real(0.6, 1)]
-      }, random, nextColor)
+      }, random, nextColor) as Node
     )
   }))
 
-  nestNodes(cores);
-
-  last(cores)!.children.push(generateNeck(random, nextColor))
-
-  return cores[0]
+  const last = cores[cores.length - 1];
+  (last.children as Node[]).push(generateNeck(random, nextColor));
+  return nestNodes(cores);
 }
 
 export default function generate(seed: number): Node {
