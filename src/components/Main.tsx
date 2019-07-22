@@ -1,9 +1,10 @@
 import React, { PureComponent } from "react";
 import CopyToClipboard from "react-copy-to-clipboard";
 import Color from "tinycolor2";
-import generateCreature, { Node } from "../Generation";
+import generateCreature, { Node, MinMouthCurve, MaxMouthCurve } from "../Generation";
 import random from "../random";
 import Creature from "./Creature";
+import { NodeType } from "../constants/NodeType";
 
 const nextSeed = () => random.integer(0, Math.pow(2, 31));
 const getHash = () => window.location.hash.substr(1);
@@ -14,9 +15,33 @@ function maxLuminence(color: Color.Instance, max: number): Color.Instance {
   return Color(hsv);
 }
 
+const SmilingFace = "😊";
+const SlightlySmilingFace = "🙂";
+const NeutralFace = "😐";
+const SlightlyFrowningFace = "🙁";
+const FrowningFace = "☹️";
+
 function setTitle(creature: Node) {
-  const isBright = creature.color!.getBrightness() > 128;
-  document.title = isBright ? "☺" : "☻";
+  const mouth = findMouth(creature)!
+  const curve = mouth.curve || 0;
+  let title: string;
+  if (curve > 0.6 * MaxMouthCurve) title = FrowningFace;
+  else if (curve > 0.2 * MaxMouthCurve) title = SlightlyFrowningFace;
+  else if (curve > 0.05 * MinMouthCurve) title = NeutralFace;
+  else if (curve > 0.6 * MinMouthCurve) title = SlightlySmilingFace;
+  else title = SmilingFace;
+  document.title = title;
+}
+
+function findMouth(node: Node): Node | null {
+  if (node.type === NodeType.Mouth) {
+    return node
+  }
+  for (const child of node.children) {
+    const mouth = findMouth(child)
+    if (mouth !== null) return mouth
+  }
+  return null
 }
 
 function updateWindow(seed: number, creature: Node) {

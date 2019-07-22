@@ -3,6 +3,9 @@ import { flatMap, times, last } from 'lodash'
 import Random from 'random-js'
 import Color from 'tinycolor2'
 
+export const MaxMouthCurve = 10;
+export const MinMouthCurve = -20;
+
 export interface Node {
   readonly type: NodeType,
   readonly position?: [number, number],
@@ -95,7 +98,7 @@ function generateHead(random, nextColor): Node {
       color: randomColor(random),
       size: [random.real(10, 40), random.real(1, 30)],
       lipThickness: random.real(1, 10),
-      curve: random.real(10, -20),
+      curve: random.real(MaxMouthCurve, MinMouthCurve),
       position: [0, -random.real(0.1, 0.9)],
       children: []
     }, ...times(random.real(1, 3), (): Node => {
