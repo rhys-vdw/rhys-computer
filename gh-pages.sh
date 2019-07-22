@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 git checkout gh-pages
-git pull
+git pull origin gh-pages
 git merge master
 npm run build
 git add -f bundle.js
