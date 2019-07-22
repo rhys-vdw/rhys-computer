@@ -13,7 +13,7 @@
         width: 100%;
       }
       svg * {
-        transition: all 0.2s ease-in-out;
+        transition: all 400ms ease-in-out;
       }
       .Main {
         /* Position */
@@ -33,6 +33,7 @@
         user-select: none;
         font-family: monospace;
         color: black;
+        transition: color 400ms;
       }
       .Main-saveLink,
       .Main-contact {
@@ -60,23 +61,21 @@
       }
       .Social-icon {
         position: relative;
-        font-size: 1.5em;
-        padding: 0.2em;
+        font-size: 2.5em;
+        padding: 10px 3vw;
       }
       .Social-text {
         display: none;
       }
       @media (min-device-width: 480px) {
         @media only screen and (min-width: 560px) {
-          .Social:not(:last-child):after {
-            content: '•';
-            display: inline-block;
-            padding: 5px;
+          .Social {
+            padding: 5px 2vw;
           }
           .Social-icon {
             font-size: 1em;
             bottom: -2px;
-            padding: 0 3px 0 0;
+            padding: 0 10px 0 0;
           }
           .Social-text {
             display: inline;

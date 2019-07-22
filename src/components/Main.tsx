@@ -1,9 +1,9 @@
-import React, { PureComponent, ReactNode } from "react";
-import generateCreature from "../Generation";
-import Creature from "./Creature";
-import random from "../random";
+import React, { PureComponent } from "react";
 import CopyToClipboard from "react-copy-to-clipboard";
 import Color from "tinycolor2";
+import generateCreature, { Node } from "../Generation";
+import random from "../random";
+import Creature from "./Creature";
 
 const nextSeed = () => random.integer(0, Math.pow(2, 31));
 const getHash = () => window.location.hash.substr(1);
@@ -14,20 +14,20 @@ function maxLuminence(color: Color.Instance, max: number): Color.Instance {
   return Color(hsv);
 }
 
-function setTitle(creature) {
-  const isBright = creature.color.getBrightness() > 128;
+function setTitle(creature: Node) {
+  const isBright = creature.color!.getBrightness() > 128;
   document.title = isBright ? "☺" : "☻";
 }
 
-function updateWindow(seed, creature) {
-  window.location.hash = seed;
+function updateWindow(seed: number, creature: Node) {
+  window.location.hash = seed.toString();
   setTitle(creature);
 }
 
 interface SocialProps {
-  icon: string;
-  children?: string;
-  href: string;
+  readonly icon: string;
+  readonly children?: string;
+  readonly href: string;
 }
 
 const Social = ({ icon, children, href }: SocialProps) => (
@@ -53,9 +53,6 @@ export default class Main extends PureComponent<{}, State> {
     const creature = generateCreature(seed);
     updateWindow(seed, creature);
     this.state = { creature, seed, hasBeenShared: false };
-    this.handleClick = this.handleClick.bind(this);
-    this.handleHashChange = this.handleHashChange.bind(this);
-    this.handleCopy = this.handleCopy.bind(this);
   }
 
   componentDidMount() {
@@ -64,10 +61,6 @@ export default class Main extends PureComponent<{}, State> {
 
   componentWillUnmount() {
     window.onhashchange = null;
-  }
-
-  handleHashChange() {
-    this.setSeed(parseInt(getHash(), 10));
   }
 
   setSeed(seed: number) {
@@ -80,11 +73,15 @@ export default class Main extends PureComponent<{}, State> {
     });
   }
 
-  handleClick() {
+  private handleHashChange = () => {
+    this.setSeed(parseInt(getHash(), 10));
+  }
+
+  private handleClick = () => {
     this.setSeed(nextSeed());
   }
 
-  handleCopy() {
+  private handleCopy = () => {
     this.setState({ hasBeenShared: true });
   }
 

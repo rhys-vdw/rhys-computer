@@ -178,8 +178,8 @@ function generateSpine(random, nextColor) {
   return cores[0]
 }
 
-export default function generate(seed) {
+export default function generate(seed: number): Node {
   const random = new Random(Random.engines.mt19937().seed(seed));
   const nextColor = colorMutator(random)
-  return generateSpine(random, nextColor)
+  return generateSpine(random, nextColor) as any
 }
