@@ -144,7 +144,7 @@ export default class Main extends PureComponent<{}, State> {
           <p>
           Rhys van der Waerden — game and web developer
           </p><p>
-          <Social icon="fas fa-envelope" href="mailto:https://github.com/rhys-vdw">
+          <Social icon="fas fa-envelope" href="mailto:rhys.vdw@gmail.com">
             rhys.vdw@gmail.com
           </Social>
           <Social icon="fab fa-github" href="https://github.com/rhys-vdw">
@@ -158,7 +158,7 @@ export default class Main extends PureComponent<{}, State> {
           </Social>
           <Social
             icon="fab fa-twitter-square"
-            href="https://www.linkedin.com/in/rhys-van-der-waerden-5b857454/"
+            href="https://twitter.com/Rhys_vdw"
           >
             Twitter
           </Social>
