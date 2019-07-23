@@ -5,6 +5,7 @@ import generateCreature, { Node, MinMouthCurve, MaxMouthCurve } from "../Generat
 import random from "../random";
 import Creature from "./Creature";
 import { NodeType } from "../constants/NodeType";
+import { setFaviconColor } from "../favicon"
 
 const nextSeed = () => random.integer(0, Math.pow(2, 31));
 const getHash = () => window.location.hash.substr(1);
@@ -47,6 +48,7 @@ function findMouth(node: Node): Node | null {
 function updateWindow(seed: number, creature: Node) {
   window.location.hash = seed.toString();
   setTitle(creature);
+  setFaviconColor(creature.color!)
 }
 
 interface SocialProps {
@@ -65,7 +67,7 @@ const Social = ({ icon, children, href }: SocialProps) => (
 );
 
 interface State {
-  readonly creature: any;
+  readonly creature: Node;
   readonly seed: number;
   readonly hasBeenShared: boolean;
 }
@@ -112,7 +114,7 @@ export default class Main extends PureComponent<{}, State> {
 
   render() {
     const { hasBeenShared, creature, seed } = this.state;
-    const textColor = maxLuminence(creature.color, 0.9);
+    const textColor = maxLuminence(creature.color!, 0.9);
     const hoverColor = textColor.clone().darken(30);
     const textHex = textColor.toString("hex8");
     const hoverHex = hoverColor.toString("hex8");
