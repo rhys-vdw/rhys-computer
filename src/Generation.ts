@@ -139,7 +139,7 @@ function generateNeck(random: Random, nextColor: GetColor): Node {
   }
 }
 
-function randomColor(random) {
+function randomColor(random: Random) {
   return Color.fromRatio({
     h: random.real(0, 1, true),
     s: random.real(0, 1, true),
@@ -147,7 +147,7 @@ function randomColor(random) {
     a: 0.95
   })
 }
-function colorMutator(random) {
+function colorMutator(random: Random) {
   const color = randomColor(random)
   return function nextColor() {
     return color
