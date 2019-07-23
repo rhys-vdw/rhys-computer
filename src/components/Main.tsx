@@ -1,5 +1,5 @@
-import React, { PureComponent } from "react";
-import CopyToClipboard from "react-copy-to-clipboard";
+import { h, Component } from "preact";
+import Copy from "copy-to-clipboard";
 import Color from "tinycolor2";
 import generateCreature, { Node, MinMouthCurve, MaxMouthCurve } from "../Generation";
 import random from "../random";
@@ -72,7 +72,7 @@ interface State {
   readonly hasBeenShared: boolean;
 }
 
-export default class Main extends PureComponent<{}, State> {
+export default class Main extends Component<{}, State> {
   constructor(props) {
     super(props);
     const hash = getHash();
@@ -109,6 +109,7 @@ export default class Main extends PureComponent<{}, State> {
   }
 
   private handleCopy = () => {
+    Copy(window.location.href, { format: "text/plain" })
     this.setState({ hasBeenShared: true });
   }
 
@@ -125,18 +126,13 @@ export default class Main extends PureComponent<{}, State> {
             __html: `a:hover { color: ${hoverHex} !important }`
           }}
         />
-        <CopyToClipboard
-          text={window.location.toString()}
-          onCopy={this.handleCopy}
-        >
-          <a className="Main-saveLink" href={`#${seed}`}>
-            {hasBeenShared ? (
-              <span className="Main-copied">♡ copied to clipboard ♡</span>
-            ) : (
-              <span className="Main-share">share</span>
-            )}
-          </a>
-        </CopyToClipboard>
+        <a onClick={this.handleCopy} className="Main-saveLink" href={`#${seed}`}>
+          {hasBeenShared ? (
+            <span className="Main-copied">♡ copied to clipboard ♡</span>
+          ) : (
+            <span className="Main-share">share</span>
+          )}
+        </a>
         <Creature
           className="Main-creature"
           creature={creature}

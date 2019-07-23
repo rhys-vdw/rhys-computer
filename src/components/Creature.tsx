@@ -1,4 +1,4 @@
-import React, { PureComponent, ReactNode, SVGAttributes } from 'react'
+import { h, Component, ComponentChild, FunctionalComponent } from 'preact'
 import PropTypes from "prop-types"
 
 import * as NodeType from '../constants/NodeType'
@@ -44,7 +44,7 @@ function Eye({ node, children }, { isBlinking }) {
         cx={0} cy={0}
         rx={1} ry={1}
         stroke='rgb(100, 100, 100)'
-        strokeWidth={0.3}
+        stroke-width={0.3}
         fill='white'
       />
       { children }
@@ -64,7 +64,7 @@ interface BallJointState {
   readonly angle: number
 }
 
-class BallJoint extends PureComponent<BallJointProps, BallJointState> {
+class BallJoint extends Component<BallJointProps, BallJointState> {
   state: BallJointState = { angle: 0 }
   intervalId: number = -1
 
@@ -107,7 +107,7 @@ class BallJoint extends PureComponent<BallJointProps, BallJointState> {
 
 interface SegementProps {
   readonly node: Node,
-  readonly children: ReactNode
+  readonly children: ComponentChild
 }
 
 function Segment({ node, children }: SegementProps) {
@@ -132,7 +132,7 @@ interface MouthState {
   readonly isSucking: boolean
 }
 
-class Mouth extends PureComponent<MouthProps, MouthState> {
+class Mouth extends Component<MouthProps, MouthState> {
   state: MouthState = {
     isSucking: false
   }
@@ -161,24 +161,26 @@ class Mouth extends PureComponent<MouthProps, MouthState> {
       >
         { !isSucking && (
           <path
+            key="mouth-closed"
             d={[
               `M ${-halfWidth} 0`,
               `Q 0 ${curve}, ${halfWidth} 0`
             ].join(' ')}
             fill={'transparent'}
             stroke={color!.toString()}
-            strokeWidth={node.lipThickness! * 2}
-            strokeLinecap="round"
+            stroke-width={node.lipThickness! * 2}
+            stroke-linecap="round"
           />
         ) }
         { isSucking && (
           <ellipse
+          key="mouth-open"
             cx={0} cy={0}
             rx={Math.max(15, halfWidth)}
             ry={Math.max(15, halfWidth)}
             fill='black'
             stroke={color!.toString()}
-            strokeWidth={node.lipThickness}
+            stroke-width={node.lipThickness}
           />
         ) }
         <ellipse
@@ -186,7 +188,7 @@ class Mouth extends PureComponent<MouthProps, MouthState> {
           rx={30}
           ry={30}
           fill='transparent'
-          strokeWidth={0}
+          stroke-width={0}
           onMouseOver={this.handleMouseOver}
           onMouseLeave={this.handleMouseLeave}
         />
@@ -238,7 +240,7 @@ function groupTransform(parent: Node, node: Node, isMirrored: boolean): string {
   const scale = node.scale || 1
 
   const translationScale = Vector.fromArray(Array.isArray(parent.size)
-    ? parent.size
+    ? parent.size as any
     : [parent.size, parent.size])
 
   const translation = new Vector(0, position[1])
@@ -259,7 +261,7 @@ interface NodeProps {
   readonly isMirrored?: boolean,
 }
 
-function NodeView({ node, parent, isMirrored = false }: NodeProps) {
+const NodeView: FunctionalComponent<NodeProps> = ({ node, parent, isMirrored = false }) => {
   const NodeComponent = componentByType[node.type]
 
   if (NodeComponent == null) {
@@ -288,7 +290,7 @@ function NodeView({ node, parent, isMirrored = false }: NodeProps) {
       />
     )
     return result
-  }, [] as ReactNode[])
+  }, [] as ComponentChild[])
 
   return (
     <g
@@ -311,11 +313,11 @@ interface State {
   readonly isBlinking: boolean
 }
 
-interface Props extends SVGAttributes<SVGElement> {
+interface Props extends JSX.SVGAttributes {
   readonly creature: any
 }
 
-export default class Creature extends PureComponent<Props, State> {
+export default class Creature extends Component<Props, State> {
   public static childContextTypes = {
     isBlinking: PropTypes.bool.isRequired,
   }
