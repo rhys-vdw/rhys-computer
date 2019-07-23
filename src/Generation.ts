@@ -1,14 +1,7 @@
 import { NodeType } from './constants/NodeType'
 import Random from 'random-js'
 import Color from 'tinycolor2'
-
-function times<T>(count: number, cb: (i: number) => T): T[] {
-  let result: T[] = []
-  for (let i = 0; i < count; i++) {
-    result.push(cb(count));
-  }
-  return result
-}
+import times from 'lodash.times'
 
 export const MaxMouthCurve = 10;
 export const MinMouthCurve = -20;
@@ -180,9 +173,10 @@ function generateSpine(random: Random, nextColor: GetColor) {
     )
   }))
 
+  const result = nestNodes(cores);
   const last = cores[cores.length - 1];
-  (last.children as Node[]).push(generateNeck(random, nextColor));
-  return nestNodes(cores);
+  (last!.children as Node[]).push(generateNeck(random, nextColor))
+  return result
 }
 
 export default function generate(seed: number): Node {
