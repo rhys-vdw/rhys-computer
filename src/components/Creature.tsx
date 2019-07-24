@@ -1,46 +1,40 @@
-import { h, Component, ComponentChild, FunctionalComponent } from 'preact'
-import PropTypes from "prop-types"
+import { h, Component, ComponentChild, FunctionalComponent } from "preact";
+import PropTypes from "prop-types";
 
-import * as NodeType from '../constants/NodeType'
-import Vector from 'victor'
-import random from '../random'
-import { Node } from "../Generation"
+import * as NodeType from "../constants/NodeType";
+import Vector from "victor";
+import random from "../random";
+import { Node } from "../Generation";
 
-const blinkTimeScale = 40
-const blinkDownDuration = blinkTimeScale * 2
-const blinkHoldDuration = blinkTimeScale * 1
-const blinkUpDuration = blinkTimeScale * 3
-const blinkDuration = blinkDownDuration + blinkHoldDuration
+const blinkTimeScale = 40;
+const blinkDownDuration = blinkTimeScale * 2;
+const blinkHoldDuration = blinkTimeScale * 1;
+const blinkUpDuration = blinkTimeScale * 3;
+const blinkDuration = blinkDownDuration + blinkHoldDuration;
 
 function Iris({ node }) {
-  const { size, color, pupilSize } = node
+  const { size, color, pupilSize } = node;
   return (
     <g>
+      <ellipse cx={0} cy={0} rx={size} ry={size} fill={color.toString()} />
+      <ellipse cx={0} cy={0} rx={pupilSize} ry={pupilSize} fill="black" />
       <ellipse
-        cx={0} cy={0}
-        rx={size} ry={size}
-        fill={color.toString()}
-      />
-      <ellipse
-        cx={0} cy={0}
-        rx={pupilSize} ry={pupilSize}
-        fill='black'
-      />
-      <ellipse
-        cx={-0.1} cy={0.1}
-        rx={pupilSize * 0.2} ry={pupilSize * 0.2}
-        fill='white'
+        cx={-0.1}
+        cy={0.1}
+        rx={pupilSize * 0.2}
+        ry={pupilSize * 0.2}
+        fill="white"
       />
     </g>
-  )
+  );
 }
 
 function Eye({ children }, { isBlinking }) {
   const scaleY = isBlinking ? 0.02 : 1;
-  const duration = isBlinking ? blinkDownDuration : blinkUpDuration
+  const duration = isBlinking ? blinkDownDuration : blinkUpDuration;
   return (
     <g
-      className='Eye'
+      className="Eye"
       style={{
         transform: `scale(1, ${scaleY})`,
         transition: `transform ${duration}ms ease-out`
@@ -48,112 +42,115 @@ function Eye({ children }, { isBlinking }) {
     >
       <ellipse
         className="eye"
-        cx={0} cy={0}
-        rx={1} ry={1}
-        stroke='rgb(100, 100, 100)'
+        cx={0}
+        cy={0}
+        rx={1}
+        ry={1}
+        stroke="rgb(100, 100, 100)"
         stroke-width={0.3}
-        fill='white'
+        fill="white"
       />
-      { children }
+      {children}
     </g>
-  )
+  );
 }
 
 Eye.contextTypes = {
-  isBlinking: PropTypes.bool.isRequired,
-}
+  isBlinking: PropTypes.bool.isRequired
+};
 
 interface BallJointProps {
-  readonly node: Node
+  readonly node: Node;
 }
 
 interface BallJointState {
-  readonly angle: number
+  readonly angle: number;
 }
 
 class BallJoint extends Component<BallJointProps, BallJointState> {
-  state: BallJointState = { angle: 0 }
-  intervalId: number = -1
+  state: BallJointState = { angle: 0 };
+  intervalId: number = -1;
 
   updateAngle = () => {
     const { maxAngle } = this.props.node;
-    const angle = random.integer(0, maxAngle!) - maxAngle! / 2
-    this.setState({ angle })
-  }
+    const angle = random.integer(0, maxAngle!) - maxAngle! / 2;
+    this.setState({ angle });
+  };
 
   componentDidMount() {
     this.intervalId = window.setInterval(
       this.updateAngle,
       random.integer(500, 1200)
-    )
+    );
   }
 
   componentWillUnmount() {
-    clearInterval(this.intervalId)
+    clearInterval(this.intervalId);
   }
 
   render() {
-    const { node, children } = this.props
-    const { size, color } = node
-    const { angle } = this.state
+    const { node, children } = this.props;
+    const { size, color } = node;
+    const { angle } = this.state;
     return (
-      <g
-        className='BallJoint'
-        style={{ transform: `rotate(${angle}deg)` }}
-      >
+      <g className="BallJoint" style={{ transform: `rotate(${angle}deg)` }}>
         <ellipse
-          cx={0} cy={0}
-          rx={size![0]} ry={size![1]}
+          cx={0}
+          cy={0}
+          rx={size![0]}
+          ry={size![1]}
           fill={color!.toString()}
         />
-        { children }
+        {children}
       </g>
-    )
+    );
   }
 }
 
 interface SegementProps {
-  readonly node: Node,
-  readonly children: ComponentChild
+  readonly node: Node;
+  readonly children: ComponentChild;
 }
 
 function Segment({ node, children }: SegementProps) {
-  const { size, color } = node
+  const { size, color } = node;
   return (
-    <g className='Segment'>
+    <g className="Segment">
       <ellipse
-        cx={0} cy={size![1]}
-        rx={size![0]} ry={size![1]}
+        cx={0}
+        cy={size![1]}
+        rx={size![0]}
+        ry={size![1]}
         fill={color!.toString()}
       />
-      { children }
+      {children}
     </g>
-  )
+  );
 }
 
 interface MouthProps {
-  readonly node: Node,
+  readonly node: Node;
 }
 
 interface MouthState {
-  readonly isSucking: boolean
+  readonly isSucking: boolean;
 }
 
 class Mouth extends Component<MouthProps, MouthState> {
   state: MouthState = {
     isSucking: false
-  }
+  };
 
   private handleMouseOver = () => {
-    this.setState({ isSucking: true })
-  }
+    this.setState({ isSucking: true });
+  };
 
   private handleMouseLeave = () => {
-    this.setState({ isSucking: false })
-  }
+    this.setState({ isSucking: false });
+  };
 
   componentDidMount() {
-    this.setState({ isSucking: false })
+    this.setState({ isSucking: false });
   }
 
   render() {
@@ -161,46 +158,44 @@ class Mouth extends Component<MouthProps, MouthState> {
     const { size, color, curve } = node;
     const { isSucking } = this.state;
 
-    const halfWidth = size![0] / 2
+    const halfWidth = size![0] / 2;
 
     return (
-      <g className='Mouth'
-      >
-        { !isSucking && (
+      <g className="Mouth">
+        {!isSucking && (
           <path
             key="mouth-closed"
-            d={[
-              `M ${-halfWidth} 0`,
-              `Q 0 ${curve}, ${halfWidth} 0`
-            ].join(' ')}
-            fill={'transparent'}
+            d={[`M ${-halfWidth} 0`, `Q 0 ${curve}, ${halfWidth} 0`].join(" ")}
+            fill={"transparent"}
             stroke={color!.toString()}
             stroke-width={node.lipThickness! * 2}
             stroke-linecap="round"
           />
-        ) }
-        { isSucking && (
+        )}
+        {isSucking && (
           <ellipse
-          key="mouth-open"
-            cx={0} cy={0}
+            key="mouth-open"
+            cx={0}
+            cy={0}
             rx={Math.max(15, halfWidth)}
             ry={Math.max(15, halfWidth)}
-            fill='black'
+            fill="black"
             stroke={color!.toString()}
             stroke-width={node.lipThickness}
           />
-        ) }
+        )}
         <ellipse
-          cx={0} cy={0}
+          cx={0}
+          cy={0}
           rx={30}
           ry={30}
-          fill='transparent'
+          fill="transparent"
           stroke-width={0}
           onMouseOver={this.handleMouseOver}
           onMouseLeave={this.handleMouseLeave}
         />
       </g>
-    )
+    );
   }
 
   /*
@@ -217,17 +212,13 @@ class Mouth extends Component<MouthProps, MouthState> {
 }
 
 function Core({ node, children }) {
-  const { size, color } = node
+  const { size, color } = node;
   return (
-    <g className='Core'>
-      <ellipse
-        cx={0} cy={0}
-        rx={size[0]} ry={size[1]}
-        fill={color}
-      />
-      { children }
+    <g className="Core">
+      <ellipse cx={0} cy={0} rx={size[0]} ry={size[1]} fill={color} />
+      {children}
     </g>
-  )
+  );
 }
 
 const componentByType = {
@@ -237,138 +228,138 @@ const componentByType = {
   [NodeType.NodeType.Segment]: Segment,
   [NodeType.NodeType.Mouth]: Mouth,
   [NodeType.NodeType.Eye]: Eye,
-  [NodeType.NodeType.Iris]: Iris,
-}
+  [NodeType.NodeType.Iris]: Iris
+};
 
 function groupTransform(parent: Node, node: Node, isMirrored: boolean): string {
-  const mirrorSign = isMirrored ? -1 : 1
-  const rotation = node.rotation || 0
-  const position = node.position || [0, 0]
-  const scale = node.scale || 1
+  const mirrorSign = isMirrored ? -1 : 1;
+  const rotation = node.rotation || 0;
+  const position = node.position || [0, 0];
+  const scale = node.scale || 1;
 
-  const translationScale = Vector.fromArray(Array.isArray(parent.size)
-    ? parent.size as any
-    : [parent.size, parent.size])
+  const translationScale = Vector.fromArray(
+    Array.isArray(parent.size)
+      ? (parent.size as any)
+      : [parent.size, parent.size]
+  );
 
   const translation = new Vector(0, position[1])
     .rotateDeg(position[0] * 180)
-    .multiply(translationScale)
+    .multiply(translationScale);
 
   return [
     `scale(${mirrorSign}, 1)`,
     `translate(${translation.x}px, ${translation.y}px)`,
     `rotate(${rotation}deg)`,
     `scale(${scale})`
-  ].join(' ')
+  ].join(" ");
 }
 
 interface NodeProps {
-  readonly node: Node,
-  readonly parent: Node,
-  readonly isMirrored?: boolean,
+  readonly node: Node;
+  readonly parent: Node;
+  readonly isMirrored?: boolean;
 }
 
-const NodeView: FunctionalComponent<NodeProps> = ({ node, parent, isMirrored = false }) => {
-  const NodeComponent = componentByType[node.type]
+const NodeView: FunctionalComponent<NodeProps> = ({
+  node,
+  parent,
+  isMirrored = false
+}) => {
+  const NodeComponent = componentByType[node.type];
 
   if (NodeComponent == null) {
-    console.error(`Unexpected node type: ${node.type}`)
-    return null
+    console.error(`Unexpected node type: ${node.type}`);
+    return null;
   }
 
   const counts = {};
 
-  const children = node.children.reduce((result, childNode) => {
+  const children = node.children.reduce(
+    (result, childNode) => {
+      // Increment count
+      counts[childNode.type] = (counts[childNode.type] || 0) + 1;
 
-    // Increment count
-    counts[childNode.type] = (counts[childNode.type] || 0) + 1;
+      const key = childNode.type + counts[childNode.type];
 
-    const key = childNode.type + counts[childNode.type]
-
-    result.push(
-      <NodeView key={key} parent={node} node={childNode} />
-    )
-    if (childNode.mirror) result.push(
-      <NodeView
-        key={`${key}-mirrored`}
-        parent={node}
-        node={childNode}
-        isMirrored={true}
-      />
-    )
-    return result
-  }, [] as ComponentChild[])
+      result.push(<NodeView key={key} parent={node} node={childNode} />);
+      if (childNode.mirror)
+        result.push(
+          <NodeView
+            key={`${key}-mirrored`}
+            parent={node}
+            node={childNode}
+            isMirrored={true}
+          />
+        );
+      return result;
+    },
+    [] as ComponentChild[]
+  );
 
   return (
     <g
       className={node.type}
       style={{ transform: groupTransform(parent, node, isMirrored) }}
     >
-      <NodeComponent node={node}>
-        { children }
-      </NodeComponent>
+      <NodeComponent node={node}>{children}</NodeComponent>
     </g>
-  )
-}
+  );
+};
 
 const DEFAULT_PARENT: Node = {
   size: [1, 1],
-  rotation: 0,
-} as any
+  rotation: 0
+} as any;
 
 interface State {
-  readonly isBlinking: boolean
+  readonly isBlinking: boolean;
 }
 
 interface Props extends JSX.SVGAttributes {
-  readonly creature: any
+  readonly creature: any;
 }
 
 export default class Creature extends Component<Props, State> {
   public static childContextTypes = {
-    isBlinking: PropTypes.bool.isRequired,
-  }
+    isBlinking: PropTypes.bool.isRequired
+  };
 
-  timeoutId: number = -1
+  timeoutId: number = -1;
 
   constructor(props) {
-    super(props)
-    this.state = { isBlinking: false }
+    super(props);
+    this.state = { isBlinking: false };
   }
 
   updateBlink = () => {
     const { isBlinking } = this.state;
-    this.setState({ isBlinking: !isBlinking })
+    this.setState({ isBlinking: !isBlinking });
 
-    const duration = isBlinking
-      ? random.integer(500, 5000)
-      : blinkDuration
+    const duration = isBlinking ? random.integer(500, 5000) : blinkDuration;
 
-    this.timeoutId = window.setTimeout(this.updateBlink, duration)
-  }
+    this.timeoutId = window.setTimeout(this.updateBlink, duration);
+  };
 
   componentDidMount() {
-    this.updateBlink()
+    this.updateBlink();
   }
 
   componentWillUnmount() {
-    clearTimeout(this.timeoutId)
+    clearTimeout(this.timeoutId);
   }
 
   getChildContext() {
-    const { isBlinking } = this.state
-    return { isBlinking }
+    const { isBlinking } = this.state;
+    return { isBlinking };
   }
 
   render() {
     const { creature, ...rest } = this.props;
     return (
-      <svg
-        viewBox={`-300 -300 600 500`}
-        {...rest}
-      >
+      <svg viewBox={`-300 -300 600 500`} {...rest}>
         <NodeView node={creature} parent={DEFAULT_PARENT} />
       </svg>
-    )
+    );
   }
 }
