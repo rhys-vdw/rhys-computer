@@ -6,6 +6,12 @@ import Vector from 'victor'
 import random from '../random'
 import { Node } from "../Generation"
 
+const blinkTimeScale = 40
+const blinkDownDuration = blinkTimeScale * 2
+const blinkHoldDuration = blinkTimeScale * 1
+const blinkUpDuration = blinkTimeScale * 3
+const blinkDuration = blinkDownDuration + blinkHoldDuration
+
 function Iris({ node }) {
   const { size, color, pupilSize } = node
   return (
@@ -29,14 +35,15 @@ function Iris({ node }) {
   )
 }
 
-function Eye({ node, children }, { isBlinking }) {
-  const scaleY = isBlinking ? 0 : 1;
+function Eye({ children }, { isBlinking }) {
+  const scaleY = isBlinking ? 0.02 : 1;
+  const duration = isBlinking ? blinkDownDuration : blinkUpDuration
   return (
     <g
       className='Eye'
       style={{
         transform: `scale(1, ${scaleY})`,
-        transition: `transform 50 ease-out`
+        transition: `transform ${duration}ms ease-out`
       }}
     >
       <ellipse
@@ -327,16 +334,15 @@ export default class Creature extends Component<Props, State> {
   constructor(props) {
     super(props)
     this.state = { isBlinking: false }
-    this.updateBlink = this.updateBlink.bind(this)
   }
 
-  updateBlink() {
+  updateBlink = () => {
     const { isBlinking } = this.state;
     this.setState({ isBlinking: !isBlinking })
 
     const duration = isBlinking
       ? random.integer(500, 5000)
-      : random.integer(200, 300)
+      : blinkDuration
 
     this.timeoutId = window.setTimeout(this.updateBlink, duration)
   }
